@@ -1,19 +1,22 @@
-const OpenAI = require("openai");
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
 const express = require("express");
 const cors = require("cors");
+const OpenAI = require("openai").default; // ✅ important
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ✅ OpenAI setup
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// ✅ Test route
 app.get("/", (req, res) => {
   res.send("Backend Running 🚀");
 });
 
+// ✅ AI Chat route
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
 
@@ -31,13 +34,14 @@ app.post("/chat", async (req, res) => {
     });
 
   } catch (error) {
-  console.log(error); // 👈 ye add kar
-  res.json({
-    reply: "AI error 😔"
-  });
+    console.log("ERROR:", error); // 👈 logs dekhenge
+    res.json({
+      reply: "AI error 😔"
+    });
+  }
+});
 
-}
-
+// ✅ Server start
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
