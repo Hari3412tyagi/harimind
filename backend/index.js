@@ -42,12 +42,12 @@ app.post("/chat", async (req, res) => {
 
   } catch (error) {
 
-    console.log(error);
+  console.log(error);
 
-    res.json({
-      reply: "AI error 😔",
-    });
-  }
+  res.json({
+    reply: error.message,
+  });
+}
 });
 
 const PORT = process.env.PORT || 5000;
