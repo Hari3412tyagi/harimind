@@ -1,47 +1,55 @@
 const express = require("express");
 const cors = require("cors");
-const OpenAI = require("openai").default; // ✅ important
+const Groq = require("groq-sdk");
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// ✅ OpenAI setup
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
-// ✅ Test route
 app.get("/", (req, res) => {
   res.send("Backend Running 🚀");
 });
 
-// ✅ AI Chat route
 app.post("/chat", async (req, res) => {
+
   const { message } = req.body;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+
+    const chatCompletion = await groq.chat.completions.create({
       messages: [
-        { role: "system", content: "You are a helpful mental health assistant." },
-        { role: "user", content: message }
-      ]
+        {
+          role: "system",
+          content: "You are a helpful mental health assistant.",
+        },
+        {
+          role: "user",
+          content: message,
+        },
+      ],
+
+      model: "llama3-8b-8192",
     });
 
     res.json({
-      reply: response.choices[0].message.content
+      reply: chatCompletion.choices[0]?.message?.content || "No response",
     });
 
   } catch (error) {
-    console.log("ERROR:", error); // 👈 logs dekhenge
+
+    console.log(error);
+
     res.json({
-      reply: "AI error 😔"
+      reply: "AI error 😔",
     });
   }
 });
 
-// ✅ Server start
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
