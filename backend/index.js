@@ -21,6 +21,12 @@ app.post("/chat", async (req, res) => {
 
     const message = req.body.message;
 
+    if (!message) {
+      return res.json({
+        reply: "Message missing",
+      });
+    }
+
     console.log("USER:", message);
 
     const completion = await groq.chat.completions.create({
@@ -37,8 +43,6 @@ app.post("/chat", async (req, res) => {
         },
       ],
     });
-
-    console.log(completion);
 
     res.json({
       reply: completion.choices[0].message.content,
